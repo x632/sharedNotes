@@ -7,10 +7,12 @@ let users = [];
 const userTable = document.querySelector('#userTable')
 var selected = false;
 var showWarning = document.getElementById("invis");
+var showEMWarning = document.getElementById("emptyMessage");
 showWarning.style.visibility = 'hidden';
+showEMWarning.style.visibility = 'hidden';
 async function getUsers(){
-    //showWarning.style.visibility = 'hidden';
-    try{
+
+        try{
         const response = await fetch(url);
 
         if (response.ok) {
@@ -49,8 +51,11 @@ const renderTable = async () =>{
 
     userTable.innerHTML = tableRow;
     hilitedUsers = [];
-    selectedUser = false;
-    console.log("Selected user från renderTable:" + selectedUser);
+    selected = false;
+    showWarning.style.visibility = 'hidden';
+    showEMWarning.style.visibility = 'hidden';
+    console.log("Om detta syns så borde meddelandet inte synas!");
+    console.log("Selected user från renderTable:" + selected);
 }
 getUsers();
 renderTable(); 
@@ -59,7 +64,10 @@ async function postNew(){
 
     let name = document.getElementById("nam").value;
     let note = document.getElementById("ema").value;
-    
+    if (name == ""){
+        showEMWarning.style.visibility = 'visible';
+        return
+    }
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var d = new Date();

@@ -48,8 +48,9 @@ app.delete('/:id', async (request, response) =>{
 })
 
 app.put('/:id', async (request, response) =>{
+  const userId = request.params.id;
   const userCollectionRef = db.collection('users');
-  const result = await userCollectionRef.doc(request.params.id).update(request.body);
+  const result = await userCollectionRef.doc(userId).update(request.body);
   
   response.status(200).send(result);
 })

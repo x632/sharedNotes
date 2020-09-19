@@ -2,14 +2,28 @@
 const url = "http://localhost:5001/sharednotes-53fbe/us-central1/users";
 let bgCol;
 let hilitedUsers = [];
+let usersDates = [];
 let users = []; 
 const userTable = document.querySelector('#userTable')
+var selected = false;
+var showWarning = document.getElementById("invis");
+showWarning.style.visibility = 'hidden';
 async function getUsers(){
+    //showWarning.style.visibility = 'hidden';
     try{
         const response = await fetch(url);
 
         if (response.ok) {
             users = await response.json();
+            console.log("Här alltså i denna form :", users)
+            users.sort(function(a,b){
+                return new Date(b.date) - new Date(a.date);
+              });
+              usersDates = [];
+            users.forEach(user =>{
+                 usersDates.push(user.date)      
+                });
+                console.log(usersDates)
             renderTable();
         }
         else{
@@ -21,18 +35,22 @@ async function getUsers(){
 } 
 
 const renderTable = async () =>{
-    console.log("varit i renderTable");
+    console.log("varit i renderTable2");
     let tableRow = "";
         users.forEach(user => {
         console.log(user);
         tableRow += 
         `<tr id = ${user.id} onclick="highlight(this)"> 
+            <td>${user.date}</td>
             <td>${user.name}</td>
             <td>${user.email}</td>
         </tr>`;
     });
 
     userTable.innerHTML = tableRow;
+    hilitedUsers = [];
+    selectedUser = false;
+    console.log("Selected user från renderTable:" + selectedUser);
 }
 getUsers();
 renderTable(); 
@@ -44,8 +62,10 @@ async function postNew(){
     
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-
-    var raw = JSON.stringify({"name":`${name}`,"email":`${note}`});
+    var d = new Date();
+    var e = `${d}`;
+    var c = e.substring(0,e.length-38);
+    var raw = JSON.stringify({"date": `${c}`,"name":`${name}`,"email":`${note}`});
     
     var requestOptions= {
         method: 'POST',
@@ -66,17 +86,22 @@ async function postNew(){
         }
     }   catch (err){
         throw err;
-    }
-    
-
-     
+    }   
 }
 
-function putNew(name, email, id){
+async function putUser(){
+    if (!selected){
+        showWarning.style.visibility = 'visible';
+        return
+    };
+    let name = document.getElementById("nam").value;
+    var d = new Date();
+    var e = `${d}`;
+    var c = e.substring(0,e.length-38);
+    let note = document.getElementById("ema").value + `&nbsp; &nbsp;(edtited: ${c})`;
+    var raw = JSON.stringify({"date": `${selectedNoteDate}`,"name":`${name}`,"email":`${note}`});
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    
-    var raw = JSON.stringify({"name":`${name}`,"email":`${email}`});
     
     var requestOptions = {
       method: 'PUT',
@@ -85,15 +110,25 @@ function putNew(name, email, id){
       redirect: 'follow'
     };
     
-    fetch(`http://localhost:5001/sharednotes-53fbe/us-central1/users/${id}`, requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(result))
-      .catch(error => console.log('error', error));
+    try{
+        const response = await fetch(url+`/${selectedUser}`, requestOptions);
 
+        if (response.ok) {
+            users = await response.json();
+            getUsers(); 
+        }
+        else{
+            throw new Error(response.statusText);
+        }
+    }   catch (err){
+        throw err;
+    }
 }
 
 async function deleteUser(){
-    
+    if (!selected){
+        showWarning.style.visibility = 'visible';
+        return};
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions= {
@@ -102,7 +137,7 @@ async function deleteUser(){
         redirect: 'follow'
     };
     try{
-        const response = await fetch(url+`/${hilitedUsers[0].id}`, requestOptions)
+        const response = await fetch(url+`/${selectedUser}`, requestOptions)
 
         if (response.ok) {
             users = await response.json();
@@ -114,9 +149,6 @@ async function deleteUser(){
     }   catch (err){
         throw err;
     }
-
-    
-   
 }
 
 function highlight(raden){
@@ -129,10 +161,11 @@ function highlight(raden){
         raden.style.backgroundColor = bgCol;
         hilitedUsers = [];
         console.log(hilitedUsers);
+        selected = false;
     }
     else{
         
-        if (hilitedUsers !== 0){
+        if (hilitedUsers.length !== 0){                                             
             hilitedUsers.forEach(hilitedUser => {
                 hilitedUser.style.backgroundColor = bgCol;
                 hilitedUsers = [];
@@ -140,8 +173,17 @@ function highlight(raden){
             }
         raden.style.backgroundColor="#BCD4EC";
         selectedUser = raden.id;
+        let noteDate = users.filter((user) => {
+            return user.id == selectedUser;
+        });
+        selectedNoteDate = noteDate[0].date;
+        console.log(selectedNoteDate);
+        console.log(selectedUser);
+        
         hilitedUsers.push(raden);
         console.log(hilitedUsers);
+        selected = true; 
+        showWarning.style.visibility = 'hidden';
     }
 }
 

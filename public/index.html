@@ -1,15 +1,70 @@
 <!DOCTYPE html>
 <html>
   <head>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=no">
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.19.1/firebase-app.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-auth.js"></script>
+    <script defer src="/__/firebase/init.js"></script>
        <!-- Bootstrap CSS -->
        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <title>SharedNotes</title>
   </head>
   <body>
+    <!-- FIRSTPAGE SECTION -->
+    <section id = "firstPageSection">
+      <div class="jumbotron">
+        <h1 class="display-4">FamilyChat</h1>
+        <hr class="my-3">
+        <p>Share messages with your family.</p><br>
+        
+       Create an account for your family<br>
+        <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='EMAIL' id="emailSection"></input> 
+        <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='PASSWORD' id="passwordSection"></input> <br>
+        <button class="btn btn-primary btn-lg" id="nextButton" onclick="showSetupFamilySection()">NEXT</button><br><br><br>
+        already registered?<br>
+         <button class="btn btn-primary btn-lg" id="loginButton" onclick="showLoginSection()">LOGIN</button><br>
+        <div id="message">
+       
+        </div> 
+      </div>
+      <br>
+      <!-- LOGIN SECTION -->
+    </section>
+    <section id = "loginSection">
+      <div class="jumbotron">
+        <h1 class="display-4">FamilyChat</h1>
+        <hr class="my-3">
+        <p>Share messages with your family.</p><br><br>
+        <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='EMAIL' id="emailSection2"></input> 
+        <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='PASSWORD' id="passwordSection2"></input> <br>
+        <button class="btn btn-primary btn-lg" id="loginButton" onclick="showMainSection()">LOGIN</button>
+       
+        <div id="message">
+       
+        </div> 
+      </div>
+      <br>
+    </section>
+   <!--  SETUPFAMILYSECTION -->
+  <section id = "setupFamilySection">
+    <div class="jumbotron" id="test"> 
+      <h1 class="display-4">FamilyChat</h1>
+      <hr class="my-3">
+      <p>Här fixar man in alla familjemedlemmar - hur vet jag ej</p><br>
+      <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="number" value='0' id="numbersOfFamMembers"></input> 
+     How many members of your family do you want to be able to participate?<br><br>
+      
+      <button class="btn btn-primary btn-lg" id="loginButton" onclick="createInputElements()">NEXT</button><br><br>
+    </div>
+    
+  </section>
+  <!-- MAINSECTION -->
+    <section id="mainSection">
     <div class="jumbotron">
-      <h1 class="display-4">Family chat</h1>
+      <h1 class="display-4">FamilyChat</h1>
       <hr class="my-3">
       <p>Share messages with your family.</p>
       
@@ -18,8 +73,7 @@
         <textarea class="form-control" id="ema" rows="3"></textarea>
       </div>
       <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='NAME' id="nam"></input> 
-      <span id = "invis" style="color:red;font-weight:bold">&nbsp;&nbsp;&nbsp;Please select a note first!</span>
-      <span id = "emptyMessage" style="color:red;font-weight:bold">&nbsp;&nbsp;&nbsp;Your message is empty!</span><br>
+      <span id = "invis" style="color:red;font-weight:bold">&nbsp;&nbsp;&nbsp;Please select a note first!</span><br>
       <button class="btn btn-primary btn-lg" id="postButton" onclick="postNew()">SEND MESSAGE</button>
       <button class="btn btn-primary btn-lg" id="deleteButton" onclick="deleteUser()">DELETE MESSAGE</button>
       <button class="btn btn-primary btn-lg" id="puButton" onclick="putUser()">EDIT MESSAGE</button>
@@ -51,8 +105,25 @@
       </div> 
   </div>
     <br>
+  </section>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    
+      firebase.auth().onAuthStateChanged(user => { });
+
+      try {
+        let app = firebase.app();
+        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+
+      } catch (e) {
+        console.error(e);
+        document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+      }
+    });
+  </script> 
+   <script src = "website.js"></script>
   
-    <script src = "website.js"></script>
+
   </body>
 </html>

@@ -1,6 +1,8 @@
 
+
+
 const url = "http://localhost:5001/sharednotes-53fbe/us-central1/users";
-let bgCol;
+let bgCol;   
 let hilitedUsers = [];
 let usersDates = [];
 let users = []; 
@@ -9,7 +11,90 @@ var selected = false;
 var showWarning = document.getElementById("invis");
 var showEMWarning = document.getElementById("emptyMessage");
 showWarning.style.visibility = 'hidden';
-showEMWarning.style.visibility = 'hidden';
+
+//sections
+const firstPageSection = document.getElementById('firstPageSection');
+const setupFamilySection = document.getElementById('setupFamilySection');
+const mainSection = document.getElementById('mainSection');
+const loginSection = document.getElementById('loginSection');
+
+//firstpage
+const nextButton = document.getElementById('nextButton');
+let email = document.getElementById("emailSection").value;
+let password = document.getElementById("passwordSection").value;
+//showFirstPageSection();
+showSetupFamilySection();
+function showFirstPageSection(){
+    mainSection.style.display = "none";
+    firstPageSection.style.display = "block";
+    loginSection.style.display = "none";
+    setupFamilySection.style.display = "none";
+}
+
+function showSetupFamilySection(){
+    //let email = document.getElementById("emailSection").value;
+    //let password = document.getElementById("passwordSection").value;
+    //firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+    //    var errorCode = error.code;
+    //    var errorMessage = error.message;
+    //    console.log(errorCode, errorMessage);
+    //    showFirstPageSection();
+    //  });
+      console.log ("Useraccount halfcreated")
+    mainSection.style.display = "none";
+    firstPageSection.style.display = "none";
+    loginSection.style.display = "none";
+    setupFamilySection.style.display = "block";
+}
+
+
+function createInputElements() {
+    const famMembers = document.getElementById ('numbersOfFamMembers').value;
+    var y = document.createElement("SPAN");
+    var t = document.createTextNode('Please enter the first names/nicknames of the familymembers (used also for login)');
+    y.appendChild(t);
+    document.getElementById("test").appendChild(y);
+    var newLine = document.getElementById('test');
+    newLine.innerHTML += "<br><br>";
+    for(i = 0; i < famMembers; i++){
+        var x = document.createElement("INPUT");
+        x.setAttribute("value", `FirstName ${i+1}`);
+        x.setAttribute("id",`displayName${i+1}`);
+        x.setAttribute("class","w-25 form-control form-control-lg mb-2");
+        x.setAttribute("type", "text");
+    
+        //document.body.appendChild(x);
+        document.getElementById("test").appendChild(x);
+    }
+    var newLine = document.getElementById('test');
+    newLine.innerHTML += "<br>";
+    var c = document.createElement("button");
+    c.setAttribute("class","btn btn-primary btn-lg");
+    c.id = "finishButton";
+    c.onclick = "testFunction";
+    c.innerHTML = "FINISH";
+    document.getElementById("test").appendChild(c);
+    var name1 = document.getElementById("displayName1").value;
+    console.log (name1);
+
+}
+
+function showMainSection(){
+
+    mainSection.style.display = "block";
+    firstPageSection.style.display = "none";
+    loginSection.style.display = "none";
+    setupFamilySection.style.display = "none";
+}
+function showLoginSection(){
+
+    mainSection.style.display = "none";
+    firstPageSection.style.display = "none";
+    loginSection.style.display = "block";
+    setupFamilySection.style.display = "none";
+}
+
+
 async function getUsers(){
 
         try{
@@ -37,7 +122,7 @@ async function getUsers(){
 } 
 
 const renderTable = async () =>{
-    console.log("varit i renderTable2");
+
     let tableRow = "";
         users.forEach(user => {
         console.log(user);
@@ -53,10 +138,8 @@ const renderTable = async () =>{
     hilitedUsers = [];
     selected = false;
     showWarning.style.visibility = 'hidden';
-    showEMWarning.style.visibility = 'hidden';
-    console.log("Om detta syns så borde meddelandet inte synas!");
-    console.log("Selected user från renderTable:" + selected);
 }
+
 getUsers();
 renderTable(); 
 
@@ -64,8 +147,9 @@ async function postNew(){
 
     let name = document.getElementById("nam").value;
     let note = document.getElementById("ema").value;
-    if (name == ""){
-        showEMWarning.style.visibility = 'visible';
+    if (note == ""){
+        showWarning.innerHTML="Your message is empty!"
+        showWarning.style.visibility = 'visible';
         return
     }
     var myHeaders = new Headers();
@@ -99,6 +183,7 @@ async function postNew(){
 
 async function putUser(){
     if (!selected){
+        showWarning.innerHTML = "Please select a row first!"
         showWarning.style.visibility = 'visible';
         return
     };
@@ -106,7 +191,14 @@ async function putUser(){
     var d = new Date();
     var e = `${d}`;
     var c = e.substring(0,e.length-38);
-    let note = document.getElementById("ema").value + `&nbsp; &nbsp;(edtited: ${c})`;
+    let not = document.getElementById("ema").value;
+    if (not == ""){
+        showWarning.innerHTML="Your message is empty!"
+        showWarning.style.visibility = 'visible';
+        return
+    }
+
+    let note =not + `&nbsp; &nbsp;(edtited: ${c})`;
     var raw = JSON.stringify({"date": `${selectedNoteDate}`,"name":`${name}`,"email":`${note}`});
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -134,7 +226,8 @@ async function putUser(){
 }
 
 async function deleteUser(){
-    if (!selected){
+    if (!selected){ 
+        showWarning.innerHTML = "Please select a row first!"
         showWarning.style.visibility = 'visible';
         return};
     var myHeaders = new Headers();

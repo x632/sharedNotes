@@ -1,6 +1,6 @@
 
-
-
+let user = null;
+let code = "";
 const url = "http://localhost:5001/sharednotes-53fbe/us-central1/users";
 let bgCol;   
 let hilitedUsers = [];
@@ -11,6 +11,14 @@ var selected = false;
 var showWarning = document.getElementById("invis");
 var showEMWarning = document.getElementById("emptyMessage");
 showWarning.style.visibility = 'hidden';
+firebase.initializeApp({
+    apiKey: 'AIzaSyBrh3S6M5ElBYqtpxMrMkCgITtcodH4WOA',
+    authDomain: 'sharednotes-53fbe.firebaseapp.com',
+    projectId: 'sharednotes-53fbe'
+  });
+  
+  var db = firebase.firestore();
+
 
 //sections
 const firstPageSection = document.getElementById('firstPageSection');
@@ -22,8 +30,8 @@ const loginSection = document.getElementById('loginSection');
 const nextButton = document.getElementById('nextButton');
 let email = document.getElementById("emailSection").value;
 let password = document.getElementById("passwordSection").value;
-//showFirstPageSection();
-showSetupFamilySection();
+showFirstPageSection();
+//showSetupFamilySection();
 function showFirstPageSection(){
     mainSection.style.display = "none";
     firstPageSection.style.display = "block";
@@ -32,14 +40,14 @@ function showFirstPageSection(){
 }
 
 function showSetupFamilySection(){
-    //let email = document.getElementById("emailSection").value;
-    //let password = document.getElementById("passwordSection").value;
-    //firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-    //    var errorCode = error.code;
-    //    var errorMessage = error.message;
-    //    console.log(errorCode, errorMessage);
-    //    showFirstPageSection();
-    //  });
+    let email = document.getElementById("emailSection").value;
+    let password = document.getElementById("passwordSection").value;
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        showFirstPageSection();
+        });
       console.log ("Useraccount halfcreated")
     mainSection.style.display = "none";
     firstPageSection.style.display = "none";
@@ -51,7 +59,7 @@ function showSetupFamilySection(){
 function createInputElements() {
     const famMembers = document.getElementById ('numbersOfFamMembers').value;
     var y = document.createElement("SPAN");
-    var t = document.createTextNode('Please enter the first names/nicknames of the familymembers (used also for login)');
+    var t = document.createTextNode('Please enter the first names/nicknames of the familymembers. Put your first name in the first box (used also for login)');
     y.appendChild(t);
     document.getElementById("test").appendChild(y);
     var newLine = document.getElementById('test');
@@ -71,14 +79,26 @@ function createInputElements() {
     var c = document.createElement("button");
     c.setAttribute("class","btn btn-primary btn-lg");
     c.id = "finishButton";
-    c.onclick = "testFunction";
+    c.setAttribute("onclick","showMainSection()");
     c.innerHTML = "FINISH";
     document.getElementById("test").appendChild(c);
-    var name1 = document.getElementById("displayName1").value;
-    console.log (name1);
+    var displayName = document.getElementById("displayName1").value;
+    console.log (displayName);
+    user = firebase.auth().currentUser;
 
+    if (user) {
+    console.log(user.uid);
+    code = user.uid;
+    console.log("You are logged in" + code);
+    } else {
+    console.log("You are not signed in");
+    }
 }
 
+function testFunction(){
+    var a = document.getElementById("displayName1").value;
+    console.log("Yippiiiee!!", a);
+}
 function showMainSection(){
 
     mainSection.style.display = "block";
@@ -93,12 +113,39 @@ function showLoginSection(){
     loginSection.style.display = "block";
     setupFamilySection.style.display = "none";
 }
+function login(){
+   var email = document.getElementById('emailSection2').value;
+   var password = document.getElementById('passwordSection2').value;
+   var displayName = document.getElementById('displayNameSection2').value;
+   firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    console.log(errorMessage);
+    showLoginSection();
+    // ...
+  });
+  user = firebase.auth().currentUser;
+  if (user) {
+    console.log(user.uid);
+    code = user.uid;
+    console.log("You are logged in" + code);
+    } else {
+    console.log("You are not signed in");
+    }
+showMainSection();getUsers();renderTable();
+}
 
 
 async function getUsers(){
+   
 
-        try{
-        const response = await fetch(url);
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    };
+         try{
+       const response = await fetch(url+`/${code}`,requestOptions);
 
         if (response.ok) {
             users = await response.json();
@@ -118,7 +165,8 @@ async function getUsers(){
         }
     }   catch (err){
         throw err;
-    }
+    } 
+    renderTable();
 } 
 
 const renderTable = async () =>{
@@ -130,7 +178,7 @@ const renderTable = async () =>{
         `<tr id = ${user.id} onclick="highlight(this)"> 
             <td>${user.date}</td>
             <td>${user.name}</td>
-            <td>${user.email}</td>
+            <td>${user.note}</td>
         </tr>`;
     });
 
@@ -140,12 +188,31 @@ const renderTable = async () =>{
     showWarning.style.visibility = 'hidden';
 }
 
-getUsers();
-renderTable(); 
+//getUsers();
+//renderTable(); 
 
 async function postNew(){
-
     let name = document.getElementById("nam").value;
+    let note = document.getElementById("ema").value;
+    var d = new Date();
+    var e = `${d}`;
+    var c = e.substring(0,e.length-38);
+    db.collection("users").doc(code).collection("objects").add({
+    name: name,
+    note: note,
+    date: c,
+    au: code
+
+})
+.then(function() {
+    console.log("Document successfully written!");
+    getUsers(); 
+})
+.catch(function(error) {
+    console.error("Error writing document: ", error);
+}); 
+
+    /*   let name = document.getElementById("nam").value;
     let note = document.getElementById("ema").value;
     if (note == ""){
         showWarning.innerHTML="Your message is empty!"
@@ -157,16 +224,16 @@ async function postNew(){
     var d = new Date();
     var e = `${d}`;
     var c = e.substring(0,e.length-38);
-    var raw = JSON.stringify({"date": `${c}`,"name":`${name}`,"email":`${note}`});
+    var raw = JSON.stringify({"date": `${c}`,"name":`${name}`,"note":`${note}`,"code":`${code}`});
     
     var requestOptions= {
         method: 'POST',
         headers: myHeaders,
         body: raw,
-        redirect: 'follow'
-    };
+        redirect: 'follow' */
+    
 
-    try{
+  /*   try{
         const response = await fetch(url, requestOptions);
 
         if (response.ok) {
@@ -178,9 +245,9 @@ async function postNew(){
         }
     }   catch (err){
         throw err;
-    }   
+    }   */ 
 }
-
+ 
 async function putUser(){
     if (!selected){
         showWarning.innerHTML = "Please select a row first!"
@@ -199,7 +266,7 @@ async function putUser(){
     }
 
     let note =not + `&nbsp; &nbsp;(edtited: ${c})`;
-    var raw = JSON.stringify({"date": `${selectedNoteDate}`,"name":`${name}`,"email":`${note}`});
+    var raw = JSON.stringify({"date": `${selectedNoteDate}`,"name":`${name}`,"note":`${note}`});
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     
@@ -211,7 +278,7 @@ async function putUser(){
     };
     
     try{
-        const response = await fetch(url+`/${selectedUser}`, requestOptions);
+        const response = await fetch(url+`/${selectedUser}`+`/${code}`, requestOptions);
 
         if (response.ok) {
             users = await response.json();
@@ -238,7 +305,7 @@ async function deleteUser(){
         redirect: 'follow'
     };
     try{
-        const response = await fetch(url+`/${selectedUser}`, requestOptions)
+        const response = await fetch(url+`/${selectedUser}`+`/${code}`, requestOptions)
 
         if (response.ok) {
             users = await response.json();

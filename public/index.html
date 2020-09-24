@@ -10,7 +10,7 @@
     <script defer src="/__/firebase/init.js"></script>
        <!-- Bootstrap CSS -->
        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <title>SharedNotes</title>
+    <title>FamilyChat</title>
   </head>
   <body>
     <!-- FIRSTPAGE SECTION -->
@@ -20,11 +20,12 @@
         <hr class="my-3">
         <p>Share messages with your family.</p><br>
         
-       Create an account for your family<br>
+       Create a private chat account for your family<br>
+       <div id = "firstPageErrMessage"></div>
         <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='EMAIL' id="emailSection"></input> 
         <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='PASSWORD' id="passwordSection"></input> <br>
         <button class="btn btn-primary btn-lg" id="nextButton" onclick="showSetupFamilySection()">NEXT</button><br><br>
-        already registered?<br><br>
+        already created an account?<br><br>
          <button class="btn btn-primary btn-lg" id="loginButton" onclick="showLoginSection()">LOGIN</button><br>
         
       </div>
@@ -36,11 +37,12 @@
         <h1 class="display-4">FamilyChat</h1>
         <hr class="my-3">
         <p>Share messages with your family.</p><br><br>
+       <div id = errorMessage></div> 
+       <div id = successfulMessage></div><br>
         <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='EMAIL' id="emailSection2"></input> 
         <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='PASSWORD' id="passwordSection2"></input> <br>
-        <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='DISPLAYNAME' id="displayNameSection2"></input> <br>
-        <button class="btn btn-primary btn-lg" id="loginButton" onclick="login()">LOGIN</button>
-       
+        <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" id="displayNameSection2"></input><br>
+        <button class="btn btn-primary btn-lg" id="loginButton" onclick = "login()">LOGIN</button>
         
       </div>
       <br>
@@ -50,7 +52,7 @@
     <div class="jumbotron" id="test"> 
       <h1 class="display-4">FamilyChat</h1>
       <hr class="my-3">
-      <p>Här fixar man in alla familjemedlemmar - hur vet jag ej</p><br>
+      <p>Add the members of your family.</p><br>
       <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="number" value='0' id="numbersOfFamMembers"></input> 
      How many members of your family do you want to be able to participate?<br><br>
       
@@ -64,19 +66,19 @@
       <h1 class="display-4">FamilyChat</h1>
       <hr class="my-3">
       <p>Share messages with your family.</p>
-      
+      <div id = whoIsLoggedIn></div><br>
       <div class="form-group">
         <label for="exampleFormControlTextarea1">Message:</label>
         <textarea class="form-control" id="ema" rows="3"></textarea>
       </div>
-      <input style="display: inline" class="w-25 form-control form-control-lg mb-2" type="text" value='NAME' id="nam"></input> 
       <span id = "invis" style="color:red;font-weight:bold">&nbsp;&nbsp;&nbsp;Please select a note first!</span><br>
       <button class="btn btn-primary btn-lg" id="postButton" onclick="postNew()">SEND MESSAGE</button>
       <button class="btn btn-primary btn-lg" id="deleteButton" onclick="deleteUser()">DELETE MESSAGE</button>
       <button class="btn btn-primary btn-lg" id="puButton" onclick="putUser()">EDIT MESSAGE</button>
+      <button class="btn btn-primary btn-lg" id="signOutButton" onclick="signOut()">SIGN OUT</button><br><br>
       <div id="message">
         <table id = minTabell>
-          <style type="text/css">
+          <style type="text/css" color="Green">
             td {
                 padding-top:0px;
                 padding-bottom:5px;
@@ -104,7 +106,7 @@
     <br>
   </section>
 
-  <script>
+ <!--  <script>
     document.addEventListener('DOMContentLoaded', function() {
     
       firebase.auth().onAuthStateChanged(user => { });
@@ -118,11 +120,11 @@
         document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
       }
     });
-  </script> 
+  </script>  -->
   <!-- <script src="/__/firebase/7.21.0/firebase-app.js"></script>
    <script src="/__/firebase/7.21.0/firebase-firestore.js"></script>-->
-  <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-firestore.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script> -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-firestore.js"></script> -->
    <script src = "website.js"></script>
   
 
